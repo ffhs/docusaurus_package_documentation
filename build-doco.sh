@@ -27,16 +27,25 @@ for TAG in $(git tag --list 'v*.*.*' | grep -v -E "(EXCLUDED_GIT_TAGS)"); do
             cp -r ./docs/doc ../docusaurus/docs
             sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
 
-        else
-            echo "No docs folder for $TAG, take readme"
+    else
+                echo "No docs folder for $TAG, take readme"
 
-            mkdir ../docusaurus/docs
-            cp README.md ../docusaurus/docs/intro.md
-            if [ -d "images" ]; then
-                cp -r ./images ../docusaurus/docs/images
-            fi
-            sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
-        fi
+                mkdir ../docusaurus/docs
+                cp README.md ../docusaurus/docs/intro.md
+                sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
+                if [ -d "images" ]; then
+                    cp -r ./images ../docusaurus/docs/images
+                fi
+
+                # Rewrite local .md links to point to the GitLab repo
+                REPO_BROWSE_URL="${GITHUB_REPO%.git}/-/blob/${TAG}"
+                sed -i "s|(LICENSE\.md)|(${REPO_BROWSE_URL}/LICENSE.md)|g" ../docusaurus/docs/intro.md
+                sed -i "s|(LICENSE)|(${REPO_BROWSE_URL}/LICENSE)|g" ../docusaurus/docs/intro.md
+                sed -i "s|(CHANGELOG\.md)|(${REPO_BROWSE_URL}/CHANGELOG.md)|g" ../docusaurus/docs/intro.md
+                sed -i "s|(\.github/CONTRIBUTING\.md)|(${REPO_BROWSE_URL}/.github/CONTRIBUTING.md)|g" ../docusaurus/docs/intro.md
+                sed -i "s|\.\./\.\./security/policy|${GITHUB_REPO%.git}/-/security/policy|g" ../docusaurus/docs/intro.md
+                sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
+    fi
 
     cd ../docusaurus
     npm run docusaurus docs:version "${TAG#v}"
@@ -120,6 +129,11 @@ fi
 cd ../docusaurus
 npm run build
 cp -r ./build ../../build
+
+
+cd ./build
+npm run build
+
 
 cd ../../
 
