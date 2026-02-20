@@ -8,29 +8,26 @@
     background-image: linear-gradient(to right, #d50006, #502479);
 }
 
-.table-of-contents__left-border{
+.table-of-contents__left-border {
     font-size: 0.9rem;
 }
 
-*{
+* {
     font-family: 'BrixSans', sans-serif;
 }
-p{
+
+p {
 
     font-size: 1.2rem;
 }
 
 .hero__subtitle,
-.hero__title{
+.hero__title {
     color: white;
 }
 
-.heroBanner_qdFl{
+.heroBanner_qdFl {
     background-color: #37333a;
-}
-
-body{
-    background-color: #2a282e;
 }
 
 .footer_lower_link,
