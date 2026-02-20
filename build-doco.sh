@@ -1,9 +1,6 @@
 #!/bin/bash
 
-#GITHUB_REPO="https://github.com/ffhs/filament-package_ffhs_approvals"
-#EXCLUDED_GIT_TAGS='alpha|beta|dev'
 GITHUB_REPO="https://internal-git.alpen.ffhs.ch/ffhs-it-services/laravel/filament-package_ffhs_approvals.git"
-EXCLUDED_GIT_TAGS='dev'
 
 
 rm -rf ./temp
@@ -16,7 +13,38 @@ cd ../
 git clone $GITHUB_REPO repo
 cd ./repo
 
-for TAG in $(git tag --list 'v*.*.*' | grep -v -E "(EXCLUDED_GIT_TAGS)"); do
+# Get the highest patch for each major.minor, preferring stable over pre-release
+TAGS=$(git tag --list 'v*.*.*' | sort -V | awk -F'[v.-]' '
+{
+    tag = $0
+    major = $2
+    minor = $3
+    # Extract patch number (remove any alpha/beta/dev suffix)
+    gsub(/-.*/,"",$4)
+    patch = $4
+    key = major "." minor
+    is_prerelease = (tag ~ /-(alpha|beta|dev)/)
+
+    # Store tag: prefer stable, or keep prerelease if no stable exists yet
+    if (!is_prerelease) {
+        stable[key] = tag
+    } else if (!(key in stable)) {
+        prerelease[key] = tag
+    }
+}
+END {
+    for (key in stable) print stable[key]
+    for (key in prerelease) if (!(key in stable)) print prerelease[key]
+}' | sort -V)
+
+# Find the newest stable version (highest version without alpha/beta/dev)
+NEWEST_STABLE=$(echo "$TAGS" | grep -v -E "(alpha|beta|dev)" | sort -V | tail -n 1)
+NEWEST_STABLE_VERSION="${NEWEST_STABLE#v}"  # Remove 'v' prefix
+
+echo "Newest stable version: $NEWEST_STABLE_VERSION"
+
+
+for TAG in $TAGS; do
     echo "Processing $TAG"
     git checkout "$TAG"
     rm -rf ../docusaurus/docs
@@ -130,6 +158,41 @@ fi
 if [ -d "docs/features" ]; then
     rm -rf ../docusaurus/static/img/features
     cp -rf ./docs/features ../docusaurus/static/img/features
+fi
+
+# Update docusaurus.config.js with the newest stable version as current
+if [ -n "$NEWEST_STABLE_VERSION" ]; then
+    CONFIG="../docusaurus/docusaurus.config.js"
+    echo "Setting current version to: $NEWEST_STABLE_VERSION"
+
+    # Use Node.js to properly update the config
+    node -e "
+const fs = require('fs');
+const configPath = '$CONFIG';
+let content = fs.readFileSync(configPath, 'utf8');
+
+// Check if versions config already exists
+if (content.includes('lastVersion:')) {
+    // Update existing lastVersion and current label/path
+    content = content.replace(/lastVersion:\s*['\"][^'\"]*['\"]/g, \"lastVersion: '$NEWEST_STABLE_VERSION'\");
+    content = content.replace(/(current:\s*\{[^}]*label:\s*)['\"][^'\"]*['\"]/, \"\\\$1'$NEWEST_STABLE_VERSION'\");
+    content = content.replace(/(current:\s*\{[^}]*path:\s*)['\"][^'\"]*['\"]/, \"\\\$1'$NEWEST_STABLE_VERSION'\");
+} else {
+    // Add versions config to docs preset
+    const docsConfig = \`docs: {
+          lastVersion: '$NEWEST_STABLE_VERSION',
+          versions: {
+            current: {
+              label: '$NEWEST_STABLE_VERSION',
+              path: '$NEWEST_STABLE_VERSION',
+            },
+          },\`;
+    content = content.replace(/docs:\s*\{/, docsConfig);
+}
+
+fs.writeFileSync(configPath, content);
+console.log('Updated docusaurus.config.js with current version: $NEWEST_STABLE_VERSION');
+"
 fi
 
 cd ../docusaurus

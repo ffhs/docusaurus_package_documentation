@@ -8,6 +8,10 @@
     background-image: linear-gradient(to right, #d50006, #502479);
 }
 
+.table-of-contents__left-border{
+    font-size: 0.9rem;
+}
+
 *{
     font-family: 'BrixSans', sans-serif;
 }
