@@ -73,7 +73,7 @@ const config = {
                 title: 'FFHS Approvals',
                 logo: {
                     alt: 'FFHS Approvals Logo',
-                    src: 'img/approvals-2.png',
+                    src: 'img/logo.png',
                 },
                 items: [
                     {
@@ -81,6 +81,10 @@ const config = {
                         sidebarId: 'docSidebar',
                         position: 'left',
                         label: 'Docs',
+                    },
+                    {
+                        type: 'docsVersionDropdown',
+                        position: 'right',
                     },
                     {
                         href: 'https://github.com/ffhs/filament-package_ffhs_approvals',
