@@ -83,6 +83,31 @@ else
     echo "No metadata.json found, using default config values"
 fi
 
+if [ -f "docs/features" ]; then
+    rm -rf ../docusaurus/static/img/features
+    cp  -rf ./docs/features ../docusaurus/static/img/features
+fi
+
+if [ -f "docs/metadata.json" ]; then
+    FEATURES=$(cat docs/metadata.json | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+features = data.get('features', [])
+if features:
+    print(json.dumps(features, indent=4))
+")
+    if [ -n "$FEATURES" ]; then
+        rm ../docusaurus/src/components/HomepageFeatures/features.json
+        echo "$FEATURES" > ../docusaurus/src/components/HomepageFeatures/features.json
+        echo "Features extracted to features.json"
+    fi
+fi
+
+if [ -d "docs/features" ]; then
+    rm -rf ../docusaurus/static/img/features
+    cp -rf ./docs/features ../docusaurus/static/img/features
+fi
+
 cd ../docusaurus
 npm run build
 cp -r ./build ../../build
