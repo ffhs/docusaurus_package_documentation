@@ -9,11 +9,12 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-DOCS_PATH="$1"
+# Convert to absolute path BEFORE changing directories
+DOCS_PATH="$(cd "$1" && pwd)"
 
 # Validate the path exists
 if [ ! -d "$DOCS_PATH" ]; then
-    echo "Error: Directory '$DOCS_PATH' does not exist"
+    echo "Error: Directory '$1' does not exist"
     exit 1
 fi
 
