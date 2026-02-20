@@ -1,6 +1,15 @@
 #!/bin/bash
 
-GITHUB_REPO="https://internal-git.alpen.ffhs.ch/ffhs-it-services/laravel/filament-package_ffhs_approvals.git"
+# Check if repo URL is provided as argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 <git-repo-url>"
+    echo "Example: $0 https://internal-git.alpen.ffhs.ch/ffhs-it-services/laravel/filament-package_ffhs_approvals.git"
+    exit 1
+fi
+
+GITHUB_REPO="$1"
+
+echo "Building documentation for: $GITHUB_REPO"
 
 
 rm -rf ./temp
@@ -171,24 +180,26 @@ const fs = require('fs');
 const configPath = '$CONFIG';
 let content = fs.readFileSync(configPath, 'utf8');
 
-// Check if versions config already exists
-if (content.includes('lastVersion:')) {
-    // Update existing lastVersion and current label/path
-    content = content.replace(/lastVersion:\s*['\"][^'\"]*['\"]/g, \"lastVersion: '$NEWEST_STABLE_VERSION'\");
-    content = content.replace(/(current:\s*\{[^}]*label:\s*)['\"][^'\"]*['\"]/, \"\\\$1'$NEWEST_STABLE_VERSION'\");
-    content = content.replace(/(current:\s*\{[^}]*path:\s*)['\"][^'\"]*['\"]/, \"\\\$1'$NEWEST_STABLE_VERSION'\");
-} else {
-    // Add versions config to docs preset
-    const docsConfig = \`docs: {
+// Find the docs config and add version settings
+const versionConfig = \`docs: {
+          sidebarPath: './sidebars.js',
+          routeBasePath: '/',
           lastVersion: '$NEWEST_STABLE_VERSION',
           versions: {
             current: {
-              label: '$NEWEST_STABLE_VERSION',
-              path: '$NEWEST_STABLE_VERSION',
+              label: 'Unreleased',
+              path: 'next',
+              banner: 'unreleased',
             },
-          },\`;
-    content = content.replace(/docs:\s*\{/, docsConfig);
-}
+          },
+          onlyIncludeVersions: (() => {
+            try {
+              const versions = require('./versions.json');
+              return versions; // Exclude 'current', only show versioned docs
+            } catch { return undefined; }
+          })(),\`;
+
+content = content.replace(/docs:\s*\{[^}]*sidebarPath:[^,]*,[^}]*routeBasePath:[^,]*,/s, versionConfig);
 
 fs.writeFileSync(configPath, content);
 console.log('Updated docusaurus.config.js with current version: $NEWEST_STABLE_VERSION');
@@ -199,10 +210,5 @@ cd ../docusaurus
 npm run build
 cp -r ./build ../../build
 
-
-cd ./build
-npm run serve
-
-
-#cd ../../
-#rm -rf /temp
+cd ../../
+rm -rf /temp
