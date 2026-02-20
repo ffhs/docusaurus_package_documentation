@@ -52,11 +52,36 @@ if [ -f "docs/logo.png" ]; then
 fi
 
 if [ -f "docs/favicon.ico" ]; then
-    rm ../docusaurus/static/img/logo.png
+    rm ../docusaurus/static/img/favicon.ico
     cp ./docs/favicon.ico ../docusaurus/static/img/favicon.ico
 fi
 
+# Apply metadata from docs/metadata.json to docusaurus config
+if [ -f "docs/metadata.json" ]; then
+    echo "metadata.json found, applying to docusaurus config"
 
+    META_TITLE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('title',''))")
+    META_TAGLINE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('tagline',''))")
+    META_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('side-url',''))")
+    META_PROJECT=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('projectName',''))")
+
+    CONFIG="../docusaurus/docusaurus.config.js"
+
+    if [ -n "$META_TITLE" ]; then
+        sed -i "s|title: '.*'|title: '$META_TITLE'|" "$CONFIG"
+    fi
+    if [ -n "$META_TAGLINE" ]; then
+        sed -i "s|tagline: '.*'|tagline: '$META_TAGLINE'|" "$CONFIG"
+    fi
+    if [ -n "$META_URL" ]; then
+        sed -i "s|url: '.*'|url: '$META_URL'|" "$CONFIG"
+    fi
+    if [ -n "$META_PROJECT" ]; then
+        sed -i "s|projectName: '.*'|projectName: '$META_PROJECT'|" "$CONFIG"
+    fi
+else
+    echo "No metadata.json found, using default config values"
+fi
 
 cd ../docusaurus
 npm run build

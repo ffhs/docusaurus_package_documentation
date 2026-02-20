@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'FFHS Approvals',
-    tagline: 'Dinosaurs are cool',
+    title: 'FFHS Package',
+    tagline: 'Metadata are missing',
     favicon: 'img/favicon.ico',
 
     // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -72,7 +72,7 @@ const config = {
             navbar: {
                 title: 'FFHS Approvals',
                 logo: {
-                    alt: 'FFHS Approvals Logo',
+                    alt: 'Tool Logo',
                     src: 'img/logo.png',
                 },
                 items: [
