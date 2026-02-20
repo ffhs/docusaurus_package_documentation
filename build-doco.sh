@@ -79,6 +79,14 @@ if [ -f "docs/metadata.json" ]; then
     if [ -n "$META_PROJECT" ]; then
         sed -i "s|projectName: '.*'|projectName: '$META_PROJECT'|" "$CONFIG"
     fi
+
+    META_HAS_INDEX=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('has_index_page', True))")
+
+    if [ "$META_HAS_INDEX" = "False" ]; then
+      echo "No index page requested, removing index.js to redirect to /intro"
+      rm -f ../docusaurus/src/pages/index.js
+      rm -f ../docusaurus/src/pages/index.module.css
+    fi
 else
     echo "No metadata.json found, using default config values"
 fi
@@ -88,6 +96,7 @@ if [ -f "docs/features" ]; then
     cp  -rf ./docs/features ../docusaurus/static/img/features
 fi
 
+# Features
 if [ -f "docs/metadata.json" ]; then
     FEATURES=$(cat docs/metadata.json | python3 -c "
 import sys, json
