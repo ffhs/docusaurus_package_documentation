@@ -24,6 +24,18 @@ Automatically generates versioned [Docusaurus](https://docusaurus.io/) documenta
 ./build-doco.sh <git-repo-url>
 ```
 
+
+## Development Mode
+
+For writing and previewing documentation locally without version generation:
+```shell
+bash ./dev-doco.sh /path/to/your-repo/doc
+```
+This starts a live development server at `http://localhost:3000` with hot reloading.
+
+**Note:** Changes to markdown files are reflected immediately. Changes to `metadata.json` require a restart.
+
+
 ## Configuration
 To customize your documentation site, create a docs/ folder on the default branch of your target repository.
 
