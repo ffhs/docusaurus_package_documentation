@@ -92,9 +92,15 @@ if [ -f "docs/metadata.json" ]; then
     META_HAS_INDEX=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('has_index_page', True))")
 
     if [ "$META_HAS_INDEX" = "False" ]; then
-      echo "No index page requested, removing index.js to redirect to /intro"
-      rm -f ../docusaurus/src/pages/index.js
+      echo "No index page requested, replacing index.js with redirect to /intro"
       rm -f ../docusaurus/src/pages/index.module.css
+      cat > ../docusaurus/src/pages/index.js << 'EOF'
+import {Redirect} from '@docusaurus/router';
+
+export default function Home() {
+  return <Redirect to="/intro" />;
+}
+EOF
     fi
 else
     echo "No metadata.json found, using default config values"
@@ -132,9 +138,8 @@ cp -r ./build ../../build
 
 
 cd ./build
-npm run build
+npm run serve
 
 
-cd ../../
-
+#cd ../../
 #rm -rf /temp
