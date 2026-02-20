@@ -47,6 +47,7 @@ const config = {
             ({
                 docs: {
                     sidebarPath: './sidebars.js',
+                    routeBasePath: '/'
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     // editUrl:
@@ -77,9 +78,9 @@ const config = {
                 items: [
                     {
                         type: 'docSidebar',
-                        sidebarId: 'tutorialSidebar',
+                        sidebarId: 'docSidebar',
                         position: 'left',
-                        label: 'Tutorial',
+                        label: 'Docs',
                     },
                     {
                         href: 'https://github.com/ffhs/filament-package_ffhs_approvals',
