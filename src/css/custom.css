@@ -1,0 +1,80 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+.footer,
+.navbar {
+    background-image: linear-gradient(to right, #d50006, #502479);
+}
+
+.footer_lower_link,
+.footer__link-item:hover,
+.footer-icon:hover {
+    fill: #bdb9b9;
+    stroke: #bdb9b9;
+    color: #bdb9b9;
+    animation-duration: 200ms;
+}
+
+.footer_lower_link {
+    color: white;
+    padding-left: 25px;
+}
+
+.footer-icon {
+    fill: white;
+    stroke: white;
+    width: 30px;
+    margin-right: 20px;
+}
+
+.footer__title {
+    font-size: 1.2rem;
+}
+
+.footer__link-item {
+    font-size: 1.2rem;
+}
+
+.navbar__title,
+.navbar__item {
+    color: white !important;
+}
+
+.navbar__title:hover,
+.navbar__item:hover {
+    color: #bcbcbc !important;
+}
+
+.main-wrapper,
+.docMainContainer_TBSr {
+    min-height: 96vh;
+}
+
+/* You can override the default Infima variables here. */
+:root {
+    /* FFHS Red Palette */
+    --ifm-color-primary: #d50006;
+    --ifm-color-primary-dark: #bf0005;
+    --ifm-color-primary-darker: #b30005;
+    --ifm-color-primary-darkest: #940004;
+    --ifm-color-primary-light: #e01a1f;
+    --ifm-color-primary-lighter: #e63338;
+    --ifm-color-primary-lightest: #f0666a;
+
+    --ifm-code-font-size: 95%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+    --ifm-color-primary: #ff2a2f;
+    --ifm-color-primary-dark: #e60005;
+    --ifm-color-primary-darker: #cc0005;
+    --ifm-color-primary-darkest: #a30004;
+    --ifm-color-primary-light: #ff4d51;
+    --ifm-color-primary-lighter: #ff666a;
+    --ifm-color-primary-lightest: #ff999c;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
