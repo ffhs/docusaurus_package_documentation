@@ -31,10 +31,10 @@ npm install
 rm -rf ./docs
 if [ -d "$DOCS_PATH/doc" ]; then
     echo "Copying docs from $DOCS_PATH/doc"
+    rm -rf ./docs
     cp -r "$DOCS_PATH/doc" ./docs
 else
     echo "Error: No 'doc' subfolder found in $DOCS_PATH"
-    echo "Expected structure: $DOCS_PATH/doc/intro.md"
     exit 1
 fi
 

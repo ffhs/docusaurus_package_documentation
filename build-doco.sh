@@ -62,7 +62,6 @@ for TAG in $TAGS; do
             echo "docs folder found for $TAG"
 
             cp -r ./docs/doc ../docusaurus/docs
-            sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
 
     else
                 echo "No docs folder for $TAG, take readme"
