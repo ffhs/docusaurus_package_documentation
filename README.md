@@ -24,22 +24,24 @@ Automatically generates versioned [Docusaurus](https://docusaurus.io/) documenta
 ./build-doco.sh <git-repo-url>
 ```
 
-
 ## Development Mode
 
 For writing and previewing documentation locally without version generation:
+
 ```shell
 bash ./dev-doco.sh /path/to/your-repo/doc
 ```
+
 This starts a live development server at `http://localhost:3000` with hot reloading.
 
 **Note:** Changes to markdown files are reflected immediately. Changes to `metadata.json` require a restart.
 
-
 ## Configuration
+
 To customize your documentation site, create a docs/ folder on the default branch of your target repository.
 
 ### Folder Structure
+
 ```
 your-repo/
 ├── docs/
@@ -56,7 +58,9 @@ your-repo/
 ```
 
 ### metadata.json
+
 Configure your documentation site with a file: `metadata.json`
+
 ```json
 {
     "title": "FFHS Approvals",
@@ -80,29 +84,37 @@ Configure your documentation site with a file: `metadata.json`
 ```
 
 #### Configuration Options
-|Field| Description|
-|-----|-------------|
-|`title`|Site title displayed in the navbar and browser tab|
-|`tagline`|Subtitle shown on the homepage|
-|`side-url`|Production URL where the documentation will be hosted|
-|`projectName`|Project name identifier|
-|`has_index_page`|Set to false to skip the homepage and redirect directly to /intro|
-|`features`|Array of feature cards displayed on the homepage|
 
+| Field            | Description                                                       |
+|------------------|-------------------------------------------------------------------|
+| `title`          | Site title displayed in the navbar and browser tab                |
+| `tagline`        | Subtitle shown on the homepage                                    |
+| `side-url`       | Production URL where the documentation will be hosted             |
+| `projectName`    | Project name identifier                                           |
+| `has_index_page` | Set to false to skip the homepage and redirect directly to /intro |
+| `features`       | Array of feature cards displayed on the homepage                  |
 
 ## Fallback Behavior
+
 If no docs/ folder exists for a tagged version, the README.md will be used as the documentation content.
 
 ## Version Selection
+
 The script automatically selects versions based on Git tags (v*.*.*):
+
 - Selects the highest patch version for each major.minor release
 - Includes pre-release versions (alpha/beta/dev) only when no stable version exists
 
-|Available Tags |Selected |
-|---------------|---------|
-|`v1.0.0`, `v1.0.1`, `v1.0.2`|v1.0.2|
-|`v2.0.0-alpha` (no stable)|v2.0.0-alpha|
-
+| Available Tags               | Selected     |
+|------------------------------|--------------|
+| `v1.0.0`, `v1.0.1`, `v1.0.2` | v1.0.2       |
+| `v2.0.0-alpha` (no stable)   | v2.0.0-alpha |
 
 ## Output
-After running the script, the static site is available in the ./build directory, ready for deployment to any static hosting service.
+
+After running the script, the static site is available in the ./build directory, ready for deployment to any static
+hosting service.
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
