@@ -107,7 +107,8 @@ if [ -f "docs/metadata.json" ]; then
 
     META_TITLE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('title',''))")
     META_TAGLINE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('tagline',''))")
-    META_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('side-url',''))")
+    META_SIDE_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('side_url',''))")
+    META_BASE_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('base_url',''))")
     META_PROJECT=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('projectName',''))")
 
     CONFIG="../docusaurus/docusaurus.config.js"
@@ -118,8 +119,11 @@ if [ -f "docs/metadata.json" ]; then
     if [ -n "$META_TAGLINE" ]; then
         sed -i "s|tagline: '.*'|tagline: '$META_TAGLINE'|" "$CONFIG"
     fi
-    if [ -n "$META_URL" ]; then
-        sed -i "s|url: '.*'|url: '$META_URL'|" "$CONFIG"
+    if [ -n "$META_SIDE_URL" ]; then
+        sed -i "s|url: '.*'|url: '$META_SIDE_URL'|" "$CONFIG"
+    fi
+    if [ -n "$META_BASE_URL" ]; then
+        sed -i "s|baseUrl: '.*'|baseUrl: '$META_BASE_URL'|" "$CONFIG"
     fi
     if [ -n "$META_PROJECT" ]; then
         sed -i "s|projectName: '.*'|projectName: '$META_PROJECT'|" "$CONFIG"

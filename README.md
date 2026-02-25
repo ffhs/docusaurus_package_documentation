@@ -65,7 +65,8 @@ Configure your documentation site with a file: `metadata.json`
 {
     "title": "FFHS Approvals",
     "tagline": "Approve your stuff",
-    "side-url": "https://your-docusaurus-site.example.com",
+    "side_url": "https://your-docusaurus-site.example.com",
+    "base_url": "filament-package_ffhs_approvals",
     "projectName": "FFHS Approvals",
     "has_index_page": true,
     "features": [
