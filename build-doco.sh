@@ -75,22 +75,32 @@ if [ -f "docs/metadata.json" ]; then
 EOF
         fi
 
-        # Extract and apply features
-        FEATURES=$(cat "docs/metadata.json" | python3 -c "
-    import sys, json
-    data = json.load(sys.stdin)
-    features = data.get('features', [])
-    if features:
-        print(json.dumps(features, indent=4))
-    ")
-        if [ -n "$FEATURES" ]; then
-            echo "Applying homepage features"
-            echo "$FEATURES" > ./src/components/HomepageFeatures/features.json
-            echo "✓ Features updated"
-        fi
-    else
-        echo "No metadata.json found, using defaults"
+
+    if [ -d "docs/features" ]; then
+        rm -rf ../docusaurus/static/img/features
+        cp -rf ./docs/features ../docusaurus/static/img/features
     fi
+
+            # Extract and apply features
+            FEATURES=$(cat "docs/metadata.json" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+features = data.get('features', [])
+if features:
+    print(json.dumps(features, indent=4))
+")
+            if [ -n "$FEATURES" ]; then
+                echo "Applying homepage features"
+            cat > ../docusaurus/src/components/HomepageFeatures/features.json << FEATURES_EOF
+$FEATURES
+FEATURES_EOF
+                echo "✓ Features updated"
+            else
+                echo "No features found"
+            fi
+else
+    echo "No metadata.json found, using defaults"
+fi
 
 # Get the highest patch for each major.minor, preferring stable over pre-release
 TAGS=$(git tag --list 'v*.*.*' | sort -V | awk -F'[v.-]' '
@@ -138,7 +148,7 @@ for TAG in $TAGS; do
 
                 mkdir ../docusaurus/docs
                 cp README.md ../docusaurus/docs/intro.md
-                sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
+#                sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
                 if [ -d "images" ]; then
                     cp -r ./images ../docusaurus/docs/images
                 fi
@@ -150,7 +160,6 @@ for TAG in $TAGS; do
                 sed -i "s|(CHANGELOG\.md)|(${REPO_BROWSE_URL}/CHANGELOG.md)|g" ../docusaurus/docs/intro.md
                 sed -i "s|(\.github/CONTRIBUTING\.md)|(${REPO_BROWSE_URL}/.github/CONTRIBUTING.md)|g" ../docusaurus/docs/intro.md
                 sed -i "s|\.\./\.\./security/policy|${GITHUB_REPO%.git}/-/security/policy|g" ../docusaurus/docs/intro.md
-                sed -i '1i\---\nsidebar_position: 1\n---\n' ../docusaurus/docs/intro.md
     fi
 
     cd ../docusaurus
@@ -174,27 +183,6 @@ fi
 if [ -f "docs/features" ]; then
     rm -rf ../docusaurus/static/img/features
     cp  -rf ./docs/features ../docusaurus/static/img/features
-fi
-
-# Features
-if [ -f "docs/metadata.json" ]; then
-    FEATURES=$(cat docs/metadata.json | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-features = data.get('features', [])
-if features:
-    print(json.dumps(features, indent=4))
-")
-    if [ -n "$FEATURES" ]; then
-        rm ../docusaurus/src/components/HomepageFeatures/features.json
-        echo "$FEATURES" > ../docusaurus/src/components/HomepageFeatures/features.json
-        echo "Features extracted to features.json"
-    fi
-fi
-
-if [ -d "docs/features" ]; then
-    rm -rf ../docusaurus/static/img/features
-    cp -rf ./docs/features ../docusaurus/static/img/features
 fi
 
 # Update docusaurus.config.js with the newest stable version as current
