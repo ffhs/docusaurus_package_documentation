@@ -58,8 +58,9 @@ if [ -f "$DOCS_PATH/metadata.json" ]; then
 
     META_TITLE=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('title',''))")
     META_TAGLINE=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tagline',''))")
-    META_URL=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('side-url',''))")
+    META_URL=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('side_url',''))")
     META_PROJECT=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('projectName',''))")
+        META_GITHUB_URL=$(cat "$DOCS_PATH/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('github_url',''))")
 
     CONFIG="./docusaurus.config.js"
 
@@ -74,6 +75,9 @@ if [ -f "$DOCS_PATH/metadata.json" ]; then
     fi
     if [ -n "$META_PROJECT" ]; then
         sed -i "s|projectName: '.*'|projectName: '$META_PROJECT'|" "$CONFIG"
+    fi
+    if [ -n "$META_GITHUB_URL" ]; then
+      sed -i.bak "s|href: 'https://github.com/[^']*'|href: '$META_GITHUB_URL'|g" "$CONFIG" && rm -f "$CONFIG.bak"
     fi
 
     # Handle index page redirect

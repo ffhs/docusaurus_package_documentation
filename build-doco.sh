@@ -22,6 +22,76 @@ cd ../
 git clone $GITHUB_REPO repo
 cd ./repo
 
+# Apply metadata from docs/metadata.json to docusaurus config
+if [ -f "docs/metadata.json" ]; then
+        echo "Applying metadata.json configuration"
+
+        META_TITLE=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('title',''))")
+        META_TAGLINE=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tagline',''))")
+        META_SIDE_URL=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('side_url',''))")
+        META_BASE_URL=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('base_url',''))")
+        META_PROJECT=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('project_name',''))")
+        META_GITHUB_URL=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('github_url',''))")
+
+        CONFIG="../docusaurus/docusaurus.config.js"
+
+        if [ -n "$META_TITLE" ]; then
+            sed -i.bak "s|title: '[^']*'|title: '$META_TITLE'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            echo "✓ Updated title: $META_TITLE"
+        fi
+        if [ -n "$META_TAGLINE" ]; then
+            sed -i.bak "s|tagline: '[^']*'|tagline: '$META_TAGLINE'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            echo "✓ Updated tagline: $META_TAGLINE"
+        fi
+        if [ -n "$META_SIDE_URL" ]; then
+            sed -i.bak "s|url: '[^']*'|url: '$META_SIDE_URL'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            echo "✓ Updated SIDE URL: $META_SIDE_URL"
+        fi
+        if [ -n "$META_BASE_URL" ]; then
+            sed -i.bak "s|baseUrl: '[^']*'|baseUrl: '$META_BASE_URL'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            echo "✓ Updated BASE URL: $META_BASE_URL"
+        fi
+        if [ -n "$META_PROJECT" ]; then
+            sed -i.bak "s|projectName: '[^']*'|projectName: '$META_PROJECT'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            echo "✓ Updated project name: $META_PROJECT"
+        fi
+        if [ -n "$META_GITHUB_URL" ]; then
+                sed -i.bak "s|href: 'https://github.com/[^']*'|href: '$META_GITHUB_URL'|g" "$CONFIG" && rm -f "$CONFIG.bak"
+                echo "✓ Updated GitHub URL: $META_GITHUB_URL"
+        fi
+
+        # Handle index page redirect
+        META_HAS_INDEX=$(cat "docs/metadata.json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('has_index_page', True))")
+
+        if [ "$META_HAS_INDEX" = "False" ]; then
+            echo "Configuring redirect to /intro"
+            rm -f ./src/pages/index.module.css
+            cat > ./src/pages/index.js << 'EOF'
+    import {Redirect} from '@docusaurus/router';
+
+    export default function Home() {
+      return <Redirect to="/intro" />;
+    }
+EOF
+        fi
+
+        # Extract and apply features
+        FEATURES=$(cat "docs/metadata.json" | python3 -c "
+    import sys, json
+    data = json.load(sys.stdin)
+    features = data.get('features', [])
+    if features:
+        print(json.dumps(features, indent=4))
+    ")
+        if [ -n "$FEATURES" ]; then
+            echo "Applying homepage features"
+            echo "$FEATURES" > ./src/components/HomepageFeatures/features.json
+            echo "✓ Features updated"
+        fi
+    else
+        echo "No metadata.json found, using defaults"
+    fi
+
 # Get the highest patch for each major.minor, preferring stable over pre-release
 TAGS=$(git tag --list 'v*.*.*' | sort -V | awk -F'[v.-]' '
 {
@@ -101,51 +171,6 @@ if [ -f "docs/favicon.ico" ]; then
     cp ./docs/favicon.ico ../docusaurus/static/img/favicon.ico
 fi
 
-# Apply metadata from docs/metadata.json to docusaurus config
-if [ -f "docs/metadata.json" ]; then
-    echo "metadata.json found, applying to docusaurus config"
-
-    META_TITLE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('title',''))")
-    META_TAGLINE=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('tagline',''))")
-    META_SIDE_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('side_url',''))")
-    META_BASE_URL=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('base_url',''))")
-    META_PROJECT=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('projectName',''))")
-
-    CONFIG="../docusaurus/docusaurus.config.js"
-
-    if [ -n "$META_TITLE" ]; then
-        sed -i "s|title: '.*'|title: '$META_TITLE'|" "$CONFIG"
-    fi
-    if [ -n "$META_TAGLINE" ]; then
-        sed -i "s|tagline: '.*'|tagline: '$META_TAGLINE'|" "$CONFIG"
-    fi
-    if [ -n "$META_SIDE_URL" ]; then
-        sed -i "s|url: '.*'|url: '$META_SIDE_URL'|" "$CONFIG"
-    fi
-    if [ -n "$META_BASE_URL" ]; then
-        sed -i "s|baseUrl: '.*'|baseUrl: '$META_BASE_URL'|" "$CONFIG"
-    fi
-    if [ -n "$META_PROJECT" ]; then
-        sed -i "s|projectName: '.*'|projectName: '$META_PROJECT'|" "$CONFIG"
-    fi
-
-    META_HAS_INDEX=$(cat docs/metadata.json | python3 -c "import sys,json; print(json.load(sys.stdin).get('has_index_page', True))")
-
-    if [ "$META_HAS_INDEX" = "False" ]; then
-      echo "No index page requested, replacing index.js with redirect to /intro"
-      rm -f ../docusaurus/src/pages/index.module.css
-      cat > ../docusaurus/src/pages/index.js << 'EOF'
-import {Redirect} from '@docusaurus/router';
-
-export default function Home() {
-  return <Redirect to="/intro" />;
-}
-EOF
-    fi
-else
-    echo "No metadata.json found, using default config values"
-fi
-
 if [ -f "docs/features" ]; then
     rm -rf ../docusaurus/static/img/features
     cp  -rf ./docs/features ../docusaurus/static/img/features
@@ -214,4 +239,4 @@ npm run build
 cp -r ./build ../../build
 
 cd ../../
-rm -rf /temp
+#rm -rf /temp
