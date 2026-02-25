@@ -1,0 +1,42 @@
+default:
+  interruptible: true
+
+stages:
+  - publication
+
+.base_after_merge_job:
+  image: node:latest
+  before_script:
+    - cp /etc/gitlab-runner/certs/ca.crt /usr/local/share/ca-certificates/
+    - update-ca-certificates
+    - apt-get update && apt-get install -y jq git
+    - git config user.email "gitlab-ci@ffhs.ch"
+    - git config user.name "GitLab CI"
+
+update-on-github:
+  extends: .base_after_merge_job
+  stage: publication
+  only:
+    - main
+  before_script:
+    - 'which ssh-agent || (apt-get update -y && apt-get install -y openssh-client)'
+    - eval "$(ssh-agent -s)"
+    - echo "$GITHUB_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - |
+      cat > ~/.ssh/config <<'EOF'
+      Host github.com
+        Hostname ssh.github.com
+        Port 443
+        User git
+        StrictHostKeyChecking accept-new
+        IdentityAgent SSH_AUTH_SOCK
+      EOF
+    - chmod 600 ~/.ssh/config
+
+    - git remote remove github 2>/dev/null || true
+    - git remote add github "git@github.com:${GITHUB_REPO}.git"
+
+  script:
+    - GIT_SSH_COMMAND="ssh -o BatchMode=yes" git push github HEAD:refs/heads/${CI_COMMIT_BRANCH} --force
