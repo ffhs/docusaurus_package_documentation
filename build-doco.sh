@@ -49,7 +49,7 @@ if [ -f "docs/metadata.json" ]; then
         fi
         if [ -n "$META_BASE_URL" ]; then
             sed -i.bak "s|baseUrl: '[^']*'|baseUrl: '$META_BASE_URL'|g" "$CONFIG" && rm -f "$CONFIG.bak"
-            sed -i.bak "s|src=\"/|src=\"$META_BASE_URL/|g" "$CONFIG" && rm -f "$CONFIG.bak"
+            sed -i.bak "s|src=\"/|src=\"/$META_BASE_URL/|g" "$CONFIG" && rm -f "$CONFIG.bak"
             echo "✓ Updated BASE URL: $META_BASE_URL"
         fi
         if [ -n "$META_PROJECT" ]; then
