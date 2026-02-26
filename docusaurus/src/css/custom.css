@@ -8,6 +8,10 @@
     background-image: linear-gradient(to right, #d50006, #502479);
 }
 
+.main-container{
+    display: flex;
+}
+
 .feature-card{
     background-color: #292929;
     border-radius: 2rem;
@@ -299,4 +303,104 @@ p {
     font-weight: 200;
     font-style: italic;
     font-display: swap;
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 996px) {
+
+    .feature-card {
+        width: 45%;
+        min-width: 280px;
+    }
+
+    .featuresRow {
+        gap: 2rem;
+    }
+
+    .heroBanner_qdFl {
+        margin: 2rem 3rem;
+        width: auto;
+        min-height: 60vh;
+    }
+
+    main {
+        width: 85%;
+    }
+
+    .hero__subtitle,
+    .hero__title {
+        margin: 1rem;
+        padding: 12px 20px;
+        font-size: 0.95em;
+    }
+
+    .button--purple {
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    .main-container{
+        display: block;
+    }
+
+    .feature-card {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .featuresRow {
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .heroBanner_qdFl {
+        margin: 1.5rem 1rem;
+        min-height: 50vh;
+        border-radius: 1.5rem;
+    }
+
+    main {
+        width: 95%;
+    }
+
+    .hero__subtitle,
+    .hero__title {
+        margin: 0.75rem;
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .button--purple {
+        margin-top: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .featuresRow {
+        gap: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .heroBanner_qdFl {
+        margin: 1rem 0.5rem;
+        min-height: 40vh;
+        border-radius: 1rem;
+    }
+
+    .hero__subtitle,
+    .hero__title {
+        margin: 0.5rem;
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    p {
+        font-size: 0.95rem;
+    }
 }

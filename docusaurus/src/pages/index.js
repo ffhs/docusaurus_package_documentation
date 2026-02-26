@@ -34,7 +34,7 @@ export default function Home() {
     <Layout
       title={`${siteConfig.title}`}
       description="A package from FFHS">
-      <div style={{display: 'flex'}}>
+      <div className="main-container">
           <HomepageHeader />
           <main>
               <HomepageFeatures />
