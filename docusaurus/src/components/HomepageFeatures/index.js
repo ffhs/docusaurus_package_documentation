@@ -34,8 +34,8 @@ function Feature({image, title, description}) {
     const isSvg = image.endsWith('.svg');
 
     return (
-        <div className={clsx('col col--4')}>
-            <div className="text--center">
+        <div className={clsx('feature-card')}>
+            <div className="text--center feature--icon">
                 {isSvg ? (
                     <InlineSvg src={imageSrc} className={styles.featureSvg} title={title} />
                 ) : (
@@ -54,7 +54,7 @@ export default function HomepageFeatures() {
     return (
         <section className={styles.features}>
             <div className="container">
-                <div className="row">
+                <div className="featuresRow">
                     {featuresData.map((props, idx) => (
                         <Feature key={idx} {...props} />
                     ))}
