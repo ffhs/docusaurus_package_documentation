@@ -14,10 +14,10 @@ const config = {
     tagline: 'Metadata are missing',
     favicon: 'img/favicon.ico',
 
-    // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-    future: {
-        v4: true, // Improve compatibility with the upcoming Docusaurus v4
-    },
+    // // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
+    // future: {
+    //     v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    // },
 
     // Set the production url of your site here
     url: 'https://your-docusaurus-site.example.com',
@@ -234,6 +234,10 @@ const config = {
                 additionalLanguages: ['php'],
             },
         }),
+    markdown: {
+        mermaid: true,
+    },
+    themes: ['@docusaurus/theme-mermaid'],
 };
 
 export default config;
